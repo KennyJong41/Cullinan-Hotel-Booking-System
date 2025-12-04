@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, User, Calendar, Building } from 'lucide-react';
+import { Menu, X, User, Search, Calendar } from 'lucide-react';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,7 +11,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/rooms', label: 'Rooms & Suites' },
+    { href: '/rooms', label: 'Rooms' },
     { href: '/book', label: 'Book Now' },
     { href: '/dashboard', label: 'My Bookings' },
   ];
@@ -22,11 +22,8 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <Building className="h-8 w-8 text-blue-600" />
-            <div>
-              <span className="text-2xl font-bold text-gray-800">Cullinan</span>
-              <span className="text-2xl font-bold text-blue-600">Hotel</span>
-            </div>
+            <div className="h-8 w-8 bg-blue-600 rounded"></div>
+            <span className="text-2xl font-bold text-gray-800">Cullinan Hotel</span>
           </Link>
 
           {/* Desktop Navigation */}
