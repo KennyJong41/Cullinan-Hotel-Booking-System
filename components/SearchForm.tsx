@@ -2,88 +2,74 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, Users, Search } from 'lucide-react';
 
 export default function SearchForm() {
   const router = useRouter();
-  const [searchData, setSearchData] = useState({
-    checkIn: new Date(),
-    checkOut: new Date(Date.now() + 86400000 * 2), // 2 days later
-    guests: 2,
+  const [formData, setFormData] = useState({
+    checkIn: '',
+    checkOut: '',
+    guests: '2',
     roomType: ''
   });
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const params = new URLSearchParams({
-      checkIn: searchData.checkIn.toISOString().split('T')[0],
-      checkOut: searchData.checkOut.toISOString().split('T')[0],
-      guests: searchData.guests.toString(),
-    });
-    
-    if (searchData.roomType) {
-      params.append('roomType', searchData.roomType);
-    }
+    const params = new URLSearchParams();
+    if (formData.checkIn) params.append('checkIn', formData.checkIn);
+    if (formData.checkOut) params.append('checkOut', formData.checkOut);
+    if (formData.guests) params.append('guests', formData.guests);
+    if (formData.roomType) params.append('roomType', formData.roomType);
     
     router.push(`/rooms?${params.toString()}`);
   };
 
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minCheckOut = formData.checkIn || tomorrow.toISOString().split('T')[0];
+
   return (
-    <form onSubmit={handleSearch} className="bg-white p-6 rounded-lg shadow-xl">
+    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label className="form-label flex items-center">
-            <Calendar className="h-4 w-4 mr-2" />
-            Check-in
-          </label>
-          <DatePicker
-            selected={searchData.checkIn}
-            onChange={(date) => date && setSearchData({...searchData, checkIn: date})}
+          <label className="form-label">Check-in Date</label>
+          <input
+            type="date"
             className="input-field"
-            minDate={new Date()}
-            dateFormat="MMM dd, yyyy"
+            value={formData.checkIn}
+            onChange={(e) => setFormData({...formData, checkIn: e.target.value})}
+            min={new Date().toISOString().split('T')[0]}
+            required
           />
         </div>
         
         <div>
-          <label className="form-label flex items-center">
-            <Calendar className="h-4 w-4 mr-2" />
-            Check-out
-          </label>
-          <DatePicker
-            selected={searchData.checkOut}
-            onChange={(date) => date && setSearchData({...searchData, checkOut: date})}
+          <label className="form-label">Check-out Date</label>
+          <input
+            type="date"
             className="input-field"
-            minDate={searchData.checkIn}
-            dateFormat="MMM dd, yyyy"
+            value={formData.checkOut}
+            onChange={(e) => setFormData({...formData, checkOut: e.target.value})}
+            min={minCheckOut}
+            required
           />
         </div>
         
         <div>
-          <label className="form-label flex items-center">
-            <Users className="h-4 w-4 mr-2" />
-            Guests
-          </label>
+          <label className="form-label">Guests</label>
           <select
             className="input-field"
-            value={searchData.guests}
-            onChange={(e) => setSearchData({...searchData, guests: parseInt(e.target.value)})}
+            value={formData.guests}
+            onChange={(e) => setFormData({...formData, guests: e.target.value})}
           >
-            {[1, 2, 3, 4, 5, 6].map(num => (
+            {[1, 2, 3, 4].map(num => (
               <option key={num} value={num}>{num} Guest{num > 1 ? 's' : ''}</option>
             ))}
           </select>
         </div>
         
         <div className="flex items-end">
-          <button
-            type="submit"
-            className="btn-primary w-full flex items-center justify-center"
-          >
-            <Search className="h-4 w-4 mr-2" />
+          <button type="submit" className="btn-primary w-full">
             Search Rooms
           </button>
         </div>
@@ -93,13 +79,13 @@ export default function SearchForm() {
         <label className="form-label">Room Type (Optional)</label>
         <select
           className="input-field"
-          value={searchData.roomType}
-          onChange={(e) => setSearchData({...searchData, roomType: e.target.value})}
+          value={formData.roomType}
+          onChange={(e) => setFormData({...formData, roomType: e.target.value})}
         >
           <option value="">All Types</option>
-          <option value="deluxe">Deluxe Rooms</option>
-          <option value="suite">Suites</option>
-          <option value="standard">Standard Rooms</option>
+          <option value="deluxe">Deluxe</option>
+          <option value="suite">Suite</option>
+          <option value="standard">Standard</option>
         </select>
       </div>
     </form>
